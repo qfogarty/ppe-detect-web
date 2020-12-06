@@ -21,7 +21,7 @@ Add a vhost
 </VirtualHost>
 ```
 
-1. replace PATH
+1. replace PATH in VHOST
 2. nvm use
 3. npm install
 4. composer install
