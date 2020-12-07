@@ -25,9 +25,8 @@ Add a vhost
 2. nvm use
 3. npm install
 4. composer install
-5. create a .env file
+5. create a .env file and get the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY keys from the pinned slack message
 5. npm build
 
-
-anything under /api/... will be for the api
-anything else will be for the react app
+anything under the url `/api/` will be for the api
+If you post multipart form data with the file data name as 'image' you will get back a rekognition in response

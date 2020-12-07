@@ -5,7 +5,7 @@ use Aws\S3\S3Client;
 
 $s3Client = new S3Client([
     'version' => 'latest',
-    'region' => 'ap-southeast-2',
+    'region' => $_ENV['S3_REGION'],
     'credentials' => [
         'key'    => $_ENV['AWS_ACCESS_KEY_ID'],
         'secret' => $_ENV['AWS_SECRET_ACCESS_KEY'],
@@ -19,12 +19,10 @@ if (isset($_FILES['image'])) {
     $file_name = $_FILES['image']['name'];
     $temp_file_location = $_FILES['image']['tmp_name'];
 
-
-    //
     $result = $s3Client->putObject([
         'Bucket' => $_ENV['S3_BUCKET'],
         'Key'    => $file_name,
-        'SourceFile' => $temp_file_location
+        'SourceFile' => $temp_file_locatione
     ]);
 }
 
