@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Placeholder from './components/Placeholder';
+import axios from 'axios';
 
 function App() {
     const [ppeResponse, setPpeResponse] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [preview, setPreview] = useState();
+
+    useEffect(() => {
+        if (!selectedImage) {
+            setPreview(undefined);
+            return () => {};
+        }
+
+        const imageURL = URL.createObjectURL(selectedImage);
+        setPreview(imageURL);
+
+        handleFileUpload();
+
+        return () => URL.revokeObjectURL(imageURL);
+    }, [selectedImage]);
 
     const handleFileSelect = (event) => {
-        //take the first file
-        if (!event.target.files[0]) {
-            return false;
+        //take the first file only
+        if (!event.target.files || event.target.files.length === 0) {
+            setSelectedImage(undefined);
+            return;
         }
-        handleFileUpload(event.target.files[0]);
+
+        setSelectedImage(event.target.files[0]);
 
     };
 
-    const handleFileUpload = (file) => {
-        console.log(`uploading ${file.name}`);
+    const handleFileUpload = () => {
 
         const formData = new FormData();
-        formData.append('image', file, file.name);
+        formData.append('image', selectedImage, selectedImage.name);
 
-        // TODO: Need an actual API
         const apiUrl = '/api';
 
         axios.post(apiUrl, formData, {
@@ -33,6 +49,7 @@ function App() {
                 );
             }
         }).then((response) => {
+            console.log(response.data);
             setPpeResponse(response.data);
         }).catch((error) => {
             console.error(error);
@@ -46,9 +63,14 @@ function App() {
             <div className="grid grid-cols-6 gap-4 items-start mt-8 mx-auto px-8">
 
                 <div className="col-span-6 sm:col-span-6 md:col-span-4 md:col-start-2 lg:col-span-4 lg:col-start-2 xl:col-start-3 xl:col-span-2">
-                    <div className="bg-white shadow-lg rounded-lg px-4 py-6 mx-4 my-4">
-                        <div className="mx-auto rounded-md">
-                            <Placeholder />
+
+                    <div className="bg-white shadow-lg rounded-lg mx-4 my-4 overflow-hidden pb-4">
+                        <div className="flex items-center h-auto w-full bg-cover bg-off-yellow">
+                            {selectedImage && preview ? (
+                                <img src={preview} alt="Is there a mask?" />
+                            ) : (
+                                <Placeholder />
+                            )}
                         </div>
                         <h1 className={`font-bold text-2xl mt-8`}>Are you wearing a mask?</h1>
                         <div className="h-2 bg-gray-200 w-64 mt-2 block mx-auto rounded-sm"></div>
@@ -58,6 +80,7 @@ function App() {
                                 <input type="file" className="hidden" onChange={handleFileSelect} />
                             </label>
                         </div>
+
                     </div>
                 </div>
 

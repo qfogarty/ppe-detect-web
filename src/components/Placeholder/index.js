@@ -2,7 +2,7 @@ import React from 'react';
 
 const Placeholder = () => {
     return (
-        <svg id="Capa_1" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg" className={`h-40 mx-auto w-auto`}>
+        <svg id="Capa_1" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg" className={`h-40 mx-auto w-auto my-4`}>
             <defs />
             <g>
                 <path
