@@ -4,7 +4,6 @@ use Aws\Exception\AwsException;
 use Aws\S3\S3Client;
 use Aws\Rekognition\RekognitionClient;
 
-
 //setup clients
 $config =
     [
@@ -70,16 +69,27 @@ try {
     foreach ($result['Persons'] as $person) {
         foreach ($person['BodyParts'] as $bodypart) {
             //only keep faces
-            if ($bodypart['Name'] != 'FACE') continue;
+            if ($bodypart['Name'] != 'FACE') {
+                continue;
+            }
 
             //we construct a face
-            $face = ['type' => 'FACE', 'cover' => false, 'confidence' => 0];
+            $face = ['type' => 'FACE', 'cover' => false, 'confidence' => 0, 'where' => []];
 
             //only keep items that have EquipmentDetections
             if (isset($bodypart['EquipmentDetections']) && !empty($bodypart['EquipmentDetections'])) {
 
                 //gotsta have the quipment
                 foreach ($bodypart['EquipmentDetections'] as $equipment) {
+                    if ($equipment['Type'] == 'FACE_COVER' && isset($equipment['BoundingBox'])) {
+                        $face['where'] = [
+                            'width' => $equipment['BoundingBox']['Width'],
+                            'height' => $equipment['BoundingBox']['Height'],
+                            'left' => $equipment['BoundingBox']['Left'],
+                            'top' => $equipment['BoundingBox']['Top']
+                        ];
+                    }
+
                     // //they gotta face hugger?
                     if ($equipment['Type'] == 'FACE_COVER' && isset($equipment['CoversBodyPart'])) {
                         $face['cover'] = true;
