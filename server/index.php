@@ -29,9 +29,16 @@ $response = [
     "detected" => []
 ];
 
-if (!isset($_FILES['image']) || !@getimagesize($_FILES['image']['tmp_name'])) {
+if (!isset($_FILES['image'])) {
     http_response_code(422);
-    $response['errors'][] = 'Image is required!';
+    $response['errors'][] = 'No image provided!';
+    echo json_encode($response);
+    return;
+}
+
+if (!@getimagesize($_FILES['image']['tmp_name'])) {
+    http_response_code(422);
+    $response['errors'][] = 'Not an image!';
     echo json_encode($response);
     return;
 }
@@ -66,19 +73,22 @@ try {
             if ($bodypart['Name'] != 'FACE') continue;
 
             //we construct a face
-            $face = ['type' => 'FACE', 'cover' => false];
-            $response['detected'][] = &$face;
+            $face = ['type' => 'FACE', 'cover' => false, 'confidence' => 0];
 
             //only keep items that have EquipmentDetections
-            if (!isset($bodypart['EquipmentDetections']) || empty($bodypart['EquipmentDetections'])) continue;
+            if (isset($bodypart['EquipmentDetections']) && !empty($bodypart['EquipmentDetections'])) {
 
-            //gotsta have the quipment
-            foreach ($bodypart['EquipmentDetections'] as $equipment) {
-                // //they gotta face hugger?
-                if ($equipment['Type'] == 'FACE_COVER' && isset($equipment['CoversBodyPart'])) {
-                    $face['cover'] = true;
+                //gotsta have the quipment
+                foreach ($bodypart['EquipmentDetections'] as $equipment) {
+                    // //they gotta face hugger?
+                    if ($equipment['Type'] == 'FACE_COVER' && isset($equipment['CoversBodyPart'])) {
+                        $face['cover'] = true;
+                        $face['confidence'] = $equipment['CoversBodyPart']['Confidence'];
+                    }
                 }
             }
+
+            $response['detected'][] = $face;
         }
     }
 } catch (\Throwable $th) {
