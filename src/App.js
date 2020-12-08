@@ -22,6 +22,12 @@ function App() {
         return () => URL.revokeObjectURL(imageURL);
     }, [selectedImage]);
 
+    useEffect(() => {
+        if (!ppeResponse) return () => {};
+            console.log(ppeResponse)
+        return () => {};
+    }, [ppeResponse]);
+
     const handleFileSelect = (event) => {
         //take the first file only
         if (!event.target.files || event.target.files.length === 0) {
@@ -42,14 +48,13 @@ function App() {
 
         axios.post(apiUrl, formData, {
             onUploadProgress: (progressEvent) => {
-                setPpeResponse(
+                console.log(
                     `Uploading ${Math.round(
                         (progressEvent.loaded / progressEvent.total) * 100
                     )}%`
                 );
             }
         }).then((response) => {
-            console.log(response.data);
             setPpeResponse(response.data);
         }).catch((error) => {
             console.error(error);
@@ -90,9 +95,9 @@ function App() {
                 <div className="grid grid-cols-6 gap-4 items-start mt-8 mx-auto px-8">
                     <div className="col-span-6 sm:col-span-6 md:col-span-4 md:col-start-2 lg:col-span-4 lg:col-start-2  xl:col-start-3 xl:col-span-2">
                         <div className="bg-white shadow-lg rounded-lg px-4 py-6 mx-4 my-4">
-                    <pre>
-                        {ppeResponse}
-                    </pre>
+                    <p>
+                        {ppeResponse.detected.length > 0 ? `We detected ${ppeResponse.detected.length} faces` : null}
+                    </p>
                         </div>
                     </div>
                 </div>)}
