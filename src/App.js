@@ -1,71 +1,80 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./App.css";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './App.css';
+import Placeholder from './components/Placeholder';
 
 function App() {
-  const [selectedFile, setSelectedFile] = useState(null);
+    const [ppeResponse, setPpeResponse] = useState(null);
 
-  const handleFileSelect = (event) => {
-    //take the first file
-    setSelectedFile(event.target.files[0]);
-  };
+    const handleFileSelect = (event) => {
+        //take the first file
+        if (!event.target.files[0]) {
+            return false;
+        }
+        handleFileUpload(event.target.files[0]);
 
-  const handleFileUpload = () => {
-    console.log(`uploading ${selectedFile.name}`);
+    };
 
-    const formData = new FormData();
-    formData.append("image", selectedFile, selectedFile.name);
+    const handleFileUpload = (file) => {
+        console.log(`uploading ${file.name}`);
 
-    // TODO: Need an actual API
-    const apiUrl = "/api";
+        const formData = new FormData();
+        formData.append('image', file, file.name);
 
-    axios
-      .post(apiUrl, formData, {
-        onUploadProgress: (progressEvent) => {
-          console.log(
-            `Uploading ${Math.round(
-              (progressEvent.loaded / progressEvent.total) * 100
-            )}%`
-          );
-        },
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+        // TODO: Need an actual API
+        const apiUrl = '/api';
 
-  return (
-    <div className="App">
-      <h1 className={`font-bold text-2xl mt-32`}>Are you wearing a mask?</h1>
+        axios.post(apiUrl, formData, {
+            onUploadProgress: (progressEvent) => {
+                setPpeResponse(
+                    `Uploading ${Math.round(
+                        (progressEvent.loaded / progressEvent.total) * 100
+                    )}%`
+                );
+            }
+        }).then((response) => {
+            setPpeResponse(response.data);
+        }).catch((error) => {
+            console.error(error);
+        });
+    };
 
-      <div
-        className={`container mx-auto flex flex-col space-x-4 items-center mt-8`}
-      >
-        <div className={`flex-1`}>
-          <label className="w-64 flex flex-col items-center border-solid border-2 border-night px-6 mt-10">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92">
-              <path d="M88 11H4c-2.2 0-4 1.8-4 4v62c0 2.2 1.8 4 4 4h84c2.2 0 4-1.8 4-4V15c0-2.2-1.8-4-4-4zm-4 8v33.5l-6.7-5.6c-1.5-1.2-3.6-1.2-5.1 0l-10.8 9-25.1-21.8c-1.5-1.3-3.6-1.3-5.1-.1L8 52.7V19h76zM8 73V63l25.6-20.7 25.1 21.8c1.5 1.3 3.7 1.3 5.2.1l10.8-9L84 63v10H8zm44.1-40.4c0-4 3.3-7.3 7.4-7.3 4.1 0 7.4 3.3 7.4 7.3s-3.3 7.3-7.4 7.3c-4.1 0-7.4-3.3-7.4-7.3z" />
-            </svg>
-            <span>Choose your image</span>
-            <input type="file" className="hidden" onChange={handleFileSelect} />
-          </label>
+    return (
+        <div className="App">
 
-          <button
-            onClick={handleFileUpload}
-            className={`border-solid border-4 border-night rounded-full py-3 px-6 mt-10`}
-          >
-            Upload
-          </button>
+
+            <div className="grid grid-cols-6 gap-4 items-start mt-8 mx-auto px-8">
+
+                <div className="col-span-6 sm:col-span-6 md:col-span-4 md:col-start-2 lg:col-span-4 lg:col-start-2 xl:col-start-3 xl:col-span-2">
+                    <div className="bg-white shadow-lg rounded-lg px-4 py-6 mx-4 my-4">
+                        <div className="mx-auto rounded-md">
+                            <Placeholder />
+                        </div>
+                        <h1 className={`font-bold text-2xl mt-8`}>Are you wearing a mask?</h1>
+                        <div className="h-2 bg-gray-200 w-64 mt-2 block mx-auto rounded-sm"></div>
+                        <div className="flex justify-center mt-4">
+                            <label className="rounded-sm px-4 bg-gray-200 mr-2">
+                                <span>Upload a photo</span>
+                                <input type="file" className="hidden" onChange={handleFileSelect} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            {ppeResponse && (
+                <div className="grid grid-cols-6 gap-4 items-start mt-8 mx-auto px-8">
+                    <div className="col-span-6 sm:col-span-6 md:col-span-4 md:col-start-2 lg:col-span-4 lg:col-start-2  xl:col-start-3 xl:col-span-2">
+                        <div className="bg-white shadow-lg rounded-lg px-4 py-6 mx-4 my-4">
+                    <pre>
+                        {ppeResponse}
+                    </pre>
+                        </div>
+                    </div>
+                </div>)}
         </div>
-        <div className={`flex-1`}>{/*<h2>Result</h2>*/}</div>
-      </div>
-
-      <div className="container mx-auto px-4"></div>
-    </div>
-  );
+    );
 }
 
 export default App;
