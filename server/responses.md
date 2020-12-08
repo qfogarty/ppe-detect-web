@@ -39,8 +39,8 @@ status code: 200
 {
   "errors": [],
   "detected": [
-    { "type": "FACE", "cover": false, "confidence": 0 },
-    { "type": "FACE", "cover": false, "confidence": 0 }
+    { "type": "FACE", "cover": false, "confidence": 0, "where": []  },
+    { "type": "FACE", "cover": false, "confidence": 0, "where": []  }
   ]
 }
 ```
