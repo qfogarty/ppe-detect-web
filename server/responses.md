@@ -1,6 +1,6 @@
 ### No Image Field
 
-We expected an multipart/data field named 'image'
+We expected an multipart/form-data field named 'image'
 status code: 422
 
 ```json
