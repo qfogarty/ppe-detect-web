@@ -67,7 +67,7 @@ function App() {
                     <div className="bg-white shadow-lg rounded-lg mx-4 my-4 overflow-hidden pb-4">
                         <div className="flex items-center h-auto w-full bg-cover bg-off-yellow">
                             {selectedImage && preview ? (
-                                <img src={preview} alt="Is there a mask?" />
+                                <img src={preview} alt="Is there a mask?" className={`mx-auto`} />
                             ) : (
                                 <Placeholder />
                             )}
