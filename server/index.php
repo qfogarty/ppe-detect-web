@@ -18,10 +18,6 @@ $config =
         ]
     ];
 
-$s3Client = new S3Client($config);
-$rClient = new RekognitionClient($config);
-
-
 //always respond with this
 $response = [
     "errors" => [],
@@ -29,43 +25,45 @@ $response = [
 ];
 
 if (!isset($_FILES['image'])) {
-    http_response_code(422);
     $response['errors'][] = 'No image provided!';
     echo json_encode($response);
     return;
 }
 
 if (!@getimagesize($_FILES['image']['tmp_name'])) {
-    http_response_code(422);
-    $response['errors'][] = 'Not an image!';
+    $response['errors'][] = 'Please only upload images.';
     echo json_encode($response);
     return;
 }
 
-$file_name = $_FILES['image']['name'];
-$temp_file_location = $_FILES['image']['tmp_name'];
-$s3Object = $s3Client->putObject([
-    'Bucket' => $_ENV['S3_BUCKET'],
-    'Key'    => $file_name,
-    'SourceFile' => $temp_file_location
-]);
-
-//detect all the things
-$result = $rClient->detectProtectiveEquipment([
-    'Image' => [
-        'S3Object' => [
-            'Bucket' => $_ENV['S3_BUCKET'],
-            'Name' => $file_name
-        ],
-    ],
-    'SummarizationAttributes' => [
-        'MinConfidence' => 0, // REQUIRED
-        'RequiredEquipmentTypes' => ['FACE_COVER'], // REQUIRED
-    ]
-]);
-
-//try and format a reponse :D
 try {
+    $s3Client = new S3Client($config);
+    $rClient = new RekognitionClient($config);
+
+    $file_name = $_FILES['image']['name'];
+    $temp_file_location = $_FILES['image']['tmp_name'];
+    $s3Object = $s3Client->putObject([
+        'Bucket' => $_ENV['S3_BUCKET'],
+        'Key'    => $file_name,
+        'SourceFile' => $temp_file_location
+    ]);
+
+    //detect all the things
+    $result = $rClient->detectProtectiveEquipment([
+        'Image' => [
+            'S3Object' => [
+                'Bucket' => $_ENV['S3_BUCKET'],
+                'Name' => $file_name
+            ],
+        ],
+        'SummarizationAttributes' => [
+            'MinConfidence' => 0, // REQUIRED
+            'RequiredEquipmentTypes' => ['FACE_COVER'], // REQUIRED
+        ]
+    ]);
+
+    //try and format a reponse :D
+
     foreach ($result['Persons'] as $person) {
         foreach ($person['BodyParts'] as $bodypart) {
             //only keep faces
@@ -102,12 +100,11 @@ try {
         }
     }
 } catch (\Throwable $th) {
-    http_response_code(500);
-    $response['errors'][] = 'Something went wrong';
+    $response['errors'][] = 'Please try again.';
 }
 
 if (empty($response['detected'])) {
-    $response['errors'][] = 'No Body parts found';
+    $response['errors'][] = 'No Faces found.';
 }
 
 // var_dump($result);
