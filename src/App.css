@@ -1,38 +1,29 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.laser {
+    @apply bg-vivid-red h-4 absolute;
+    width: 150%;
+    margin-left: -25%;
+    top: 0%;
+    z-index: 2;
+    box-shadow: 0 0 7px red;
+    animation: scanning 3s infinite;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.diode {
+    animation: beam .01s infinite;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+@keyframes beam {
+    50% {
+        opacity: 0;
+    }
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes scanning {
+    50% {
+        top: 100%;
+    }
 }

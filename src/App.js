@@ -4,8 +4,15 @@ import axios from 'axios';
 import ImageDetection from './containers/ImageDetection';
 
 function App() {
-    const [ppeResponse, setPpeResponse] = useState(null);
+
+    const initialResponse = {
+        errors: ['No image provided!'],
+        detected: []
+    };
+
+    const [ppeResponse, setPpeResponse] = useState(initialResponse);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [scanning, setScanning] = useState(false);
     const [preview, setPreview] = useState();
 
     useEffect(() => {
@@ -22,13 +29,12 @@ function App() {
         return () => URL.revokeObjectURL(imageURL);
     }, [selectedImage]);
 
-    useEffect(() => {
-        if (!ppeResponse) return () => {};
-        console.log(ppeResponse);
-        return () => {};
-    }, [ppeResponse]);
-
     const handleFileSelect = (event) => {
+        // reset
+        if (ppeResponse.detected.length > 0) {
+            setPpeResponse(initialResponse);
+        }
+
         //take the first file only
         if (!event.target.files || event.target.files.length === 0) {
             setSelectedImage(undefined);
@@ -46,6 +52,8 @@ function App() {
 
         const apiUrl = '/api';
 
+        setScanning(true);
+
         axios.post(apiUrl, formData, {
             onUploadProgress: (progressEvent) => {
                 console.log(
@@ -56,8 +64,10 @@ function App() {
             }
         }).then((response) => {
             setPpeResponse(response.data);
+            setScanning(false);
         }).catch((error) => {
             console.error(error);
+            setScanning(false);
         });
     };
 
@@ -72,7 +82,7 @@ function App() {
                     <div className="bg-white shadow-lg rounded-lg mx-4 my-4 overflow-hidden pb-4">
                         <div className="flex items-center h-auto w-full bg-cover bg-off-yellow">
 
-                            <ImageDetection src={preview} result={ppeResponse} />
+                            <ImageDetection src={preview} result={ppeResponse} scanning={scanning} />
 
                         </div>
                         <h1 className={`font-bold text-2xl mt-8`}>Are you wearing a mask?</h1>
