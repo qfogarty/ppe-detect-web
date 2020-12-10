@@ -92,22 +92,21 @@ function App() {
                     <ImageDetection src={preview} result={ppeResponse} scanning={scanning} />
                 </div>
 
-                <div className="flex justify-center mt-4">
+                <div className="mt-4">
 
                     {ppeResponse.detected.length > 0 ? (
                         <>
                             <TextResult response={ppeResponse} setAlert={setAlert} />
 
-                            <button className={`my-4`}  onClick={() => resetApp()}>Reset</button>
+                            <button className={`rounded-md px-4 py-2 bg-gray-200 my-4`}  onClick={() => resetApp()}>Reset</button>
                         </>
 
                     ) : (
-                        <label className="rounded-sm px-4 bg-gray-200 mr-2">
+                        <label className="rounded-md px-4 py-2 bg-gray-200 my-4">
                             <span>Upload a photo</span>
                             <input type="file" className="hidden" onChange={handleFileSelect} />
                         </label>
                     )}
-
 
                 </div>
 
