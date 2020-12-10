@@ -15,7 +15,7 @@
 
 
 .App {
-    text-align: center;
+    @apply absolute text-center top-2/4 transform translate-y-2/4 w-full
 }
 
 .stripes {

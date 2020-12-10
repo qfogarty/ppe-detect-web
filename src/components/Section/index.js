@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 const Section = (props) => {
 
@@ -15,33 +16,38 @@ const Section = (props) => {
         'xl:col-span-4',
         'stripes',
         'shadow-lg',
-        'rounded-lg'
+        'rounded-lg',
+        'border-4'
     ];
 
-    const [classes, setClasses] = useState([]);
+    const backgroundVariants = {
 
-    useEffect(() => {
-
-        if (flashing) {
-            setClasses([...initialClasses, 'stripes--flashing']);
-        } else {
-            setClasses(initialClasses);
+        warn: {
+            borderColor: ['#FFFDFB', '#FFFC8B', '#FFFDFB'],
+            transition: {
+                duration: 3,
+                yoyo: Infinity
+            }
+        },
+        ok: {
+            borderColor: '#FFFDFB'
         }
-        return () => {};
-
-    }, [flashing]);
+    };
 
     return (
-        <section className="grid grid-cols-8 gap-4 items-start mt-8 mx-auto px-8">
+        <section className="grid grid-cols-8 gap-4 items-start mx-auto px-4">
 
-            <div
-                className={classes.join(' ')}>
+            <motion.div
+                variants={backgroundVariants}
+                initial="ok"
+                animate={flashing ? 'warn' : 'ok'}
+                className={initialClasses.join(' ')}>
                 <div className="bg-white rounded-lg mx-8 my-8 overflow-hidden pb-4">
 
                     {children}
 
                 </div>
-            </div>
+            </motion.div>
 
         </section>
     );
