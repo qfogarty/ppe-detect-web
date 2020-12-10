@@ -4,10 +4,77 @@
 
 @layer base {
     html {
-        @apply bg-off-blue;
+        @apply bg-off;
         @apply text-night;
     }
+
     body {
         @apply text-lg
+    }
+}
+
+
+.App {
+    text-align: center;
+}
+
+.stripes {
+    background: repeating-linear-gradient(
+            -45deg,
+            #FFF,
+            #FFF 30px,
+            #FFFC8B 30px,
+            #FFFC8B 60px
+    );
+}
+
+.stripes--flashing {
+    animation: blinkingBackground 2s infinite;
+}
+
+.laser {
+    @apply bg-vivid-red h-2 absolute;
+    width: 150%;
+    margin-left: -25%;
+    top: 0%;
+    z-index: 2;
+    box-shadow: 0 0 7px red;
+    animation: scanning 3s infinite;
+}
+
+.diode {
+    animation: beam .01s infinite;
+}
+
+@keyframes beam {
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes scanning {
+    50% {
+        top: 100%;
+    }
+}
+
+@keyframes blinkingBackground {
+    0% {
+        background: repeating-linear-gradient(
+                -45deg,
+                #EB1951,
+                #EB1951 30px,
+                #FFFFFF 30px,
+                #FFFFFF 60px
+        );
+    }
+    100% {
+        background: repeating-linear-gradient(
+                -45deg,
+                #FFF,
+                #FFF 30px,
+                #EB1951 30px,
+                #EB1951 60px
+        );
     }
 }
