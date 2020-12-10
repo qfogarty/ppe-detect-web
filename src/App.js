@@ -6,7 +6,7 @@ import ImageDetection from './containers/ImageDetection';
 function App() {
 
     const initialResponse = {
-        errors: ['No image provided!'],
+        errors: [],
         detected: []
     };
 
@@ -71,6 +71,11 @@ function App() {
         });
     };
 
+
+    const masks = ppeResponse.detected.filter(face => face.cover);
+    const noMasks = ppeResponse.detected.filter(face => !face.cover);
+    const plural = (n, single, plural) => n > 1 ? plural : single;
+
     return (
         <div className="App">
 
@@ -103,9 +108,30 @@ function App() {
                 <div className="grid grid-cols-6 gap-4 items-start mt-8 mx-auto px-8">
                     <div className="col-span-6 sm:col-span-6 md:col-span-4 md:col-start-2 lg:col-span-4 lg:col-start-2  xl:col-start-3 xl:col-span-2">
                         <div className="bg-white shadow-lg rounded-lg px-4 py-6 mx-4 my-4">
-                            <p>
-                                {ppeResponse.detected.length > 0 ? `We detected ${ppeResponse.detected.length} faces` : null}
-                            </p>
+
+                                { masks.length == 1 ? (
+                                    <p className=''>Detected 1 person wearing a mask</p>
+                                )  : null }
+
+                                { masks.length > 1 ? (
+                                    <p className=''>Detected {masks.length} people wearing masks</p>
+                                )  : null }
+
+                                { noMasks.length == 1 ? (
+                                    <p className='bg-vivid-red-500 text-white'>Warning, detected 1 person not wearing a mask</p>
+                                )  : null }
+
+                                { noMasks.length > 1 ? (
+                                    <p className='bg-vivid-red-500 text-white'>Warning, detected { noMasks.length } people not wearing masks</p>
+                                )  : null }
+
+                                {
+                                    ppeResponse.errors.map((error, idx) => (
+                                        <p className='bg-vivid-red-500 text-white' key={idx}>
+                                            {error}
+                                        </p>
+                                    ))
+                                }
                         </div>
                     </div>
                 </div>)}
