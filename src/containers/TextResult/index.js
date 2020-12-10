@@ -4,24 +4,39 @@ const TextResult = (props) => {
 
     const { response, setAlert } = props;
 
-    const unMaskedFaces = response.detected.filter((face) => !face.cover);
-    const unMaskedTotal = unMaskedFaces.length || 0;
+    const masks = response.detected.filter(face => face.cover);
+    const noMasks = response.detected.filter(face => !face.cover);
+    const plural = (n, single, plural) => n > 1 ? plural : single;
 
-    if (unMaskedTotal > 0) {
+    if (noMasks.length > 1) {
         setAlert(true);
     }
 
     return response.detected.length > 0 && (
         <section>
-            <p>
-                {response.detected.length > 0 ? `${response.detected.length} faces` : `No faces`} found.
-            </p>
-            {unMaskedTotal > 0 && (
-                <>
-                    <h2 className={`text-2xl text-bold my-4`}>Warning</h2>
-                    <p>{unMaskedTotal} {unMaskedTotal === 1 ? 'face is' : 'faces are'} unmasked.</p>
-                </>
-            )}
+            {masks.length == 1 ? (
+                <p className=''>Detected 1 person wearing a mask</p>
+            ) : null}
+
+            {masks.length > 1 ? (
+                <p className=''>Detected {masks.length} people wearing masks</p>
+            ) : null}
+
+            {noMasks.length == 1 ? (
+                <p className='bg-vivid-red-500 text-white'>Warning, detected 1 person not wearing a mask</p>
+            ) : null}
+
+            {noMasks.length > 1 ? (
+                <p className='bg-vivid-red-500 text-white'>Warning, detected {noMasks.length} people not wearing masks</p>
+            ) : null}
+
+            {
+                response.errors.map((error, idx) => (
+                    <p className='bg-vivid-red-500 text-white' key={idx}>
+                        {error}
+                    </p>
+                ))
+            }
         </section>
     );
 };
